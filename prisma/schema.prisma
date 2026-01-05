@@ -1,0 +1,208 @@
+// Untuk DATABASE
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "foreignKeys"
+}
+
+
+
+// =====================================
+// UNIT
+// =====================================
+model Unit {
+  id      Int       @id @default(autoincrement())
+  nama    String    @unique
+
+  // 1 Unit memiliki banyak jabatan
+  jabatans Jabatan[]
+
+  // Relasi ke User lewat pivot
+  userUnitJabatan UserUnitJabatan[]
+
+  // Relasi ke Rapat (many-to-many)
+  rapat   Rapat[]   @relation("RapatUnit")
+
+  @@map("unit")
+}
+
+// =====================================
+// JABATAN
+// =====================================
+model Jabatan {
+  id        Int    @id @default(autoincrement())
+  nama      String
+  unitId    Int
+  unit      Unit   @relation(fields: [unitId], references: [id])
+
+  userUnitJabatan UserUnitJabatan[]
+
+  @@unique([nama, unitId], name: "nama_unitId")
+
+    @@map("jabatan")
+}
+
+
+// =====================================
+// USER
+// =====================================
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String?
+  nik          Int?
+  
+  // Hapus unit/jabatan string — sudah pakai relasi
+  // unit        String?
+  // jabatan     String?
+
+  googleId     String?
+  accessToken  String?  @db.Text
+  refreshToken String?  @db.Text
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relasi user → unit × jabatan
+  unitJabatan UserUnitJabatan[]
+
+  // Rapat yang dibuat user
+  rapatDibuat  Rapat[]   @relation("RapatPembuat")
+
+  // User sebagai peserta rapat
+  rapatPeserta RapatPeserta[]
+
+  profileCompleted Boolean @default(false)
+
+    @@map("user")
+}
+
+// =====================================
+// PIVOT TABLE: USER × UNIT × JABATAN
+// =====================================
+model UserUnitJabatan {
+  id        Int      @id @default(autoincrement())
+
+  userId    Int
+  unitId    Int
+  jabatanId Int
+
+  user    User    @relation(fields: [userId], references: [id])
+  unit    Unit    @relation(fields: [unitId], references: [id])
+  jabatan Jabatan @relation(fields: [jabatanId], references: [id])
+
+  @@unique([userId, unitId, jabatanId])
+
+    @@map("userunitjabatan")
+}
+
+// =====================================
+// RAPAT
+// =====================================
+model Rapat {
+  id             Int             @id @default(autoincrement())
+  // googleEventId  String?         @unique
+  judul          String
+  deskripsi      String?         @db.Text
+  tanggalMulai   DateTime
+  tanggalSelesai DateTime?
+  lokasi         String?
+  linkMeeting    String?
+  pesertaEmails  Json?
+  status         String          @default("BELUM_MULAI")
+  pembuatId      Int
+  dibuatPada     DateTime        @default(now())
+
+  // Rapat many-to-many dengan Unit
+  unitTujuan   Unit[]           @relation("RapatUnit")
+
+  // Relasi pembuat rapat
+  pembuat   User           @relation("RapatPembuat", fields: [pembuatId], references: [id])
+
+  // Peserta rapat
+  peserta   RapatPeserta[]
+
+  // Satu rapat punya satu notulen
+  notulen   Notulen?
+
+    @@map("rapat")
+}
+
+// =====================================
+// RAPAT PESERTA
+// =====================================
+model RapatPeserta {
+  id         Int       @id @default(autoincrement())
+  rapatId    Int
+  userId     Int
+  status     String    @default("DIUNDANG")
+  waktuAbsen DateTime?
+
+  user  User  @relation(fields: [userId], references: [id])
+  rapat Rapat @relation(fields: [rapatId], references: [id], onDelete: Cascade)
+
+    @@map("rapatpeserta")
+}
+
+// =====================================
+// NOTULEN
+// =====================================
+
+model Notulen {
+  id             Int       @id @default(autoincrement())
+  rapatId        Int       @unique
+
+  jenisNotulen   String    @default("RAPAT_BIASA")
+  // RAPAT_BIASA | RTM
+
+  pembukaan      String?   @db.Text
+  penutup        String?   @db.Text
+
+  status         String    @default("DRAFT")
+  dikunciPada    DateTime?
+
+  dibuatOleh     Int
+  dibuatPada     DateTime  @default(now())
+  diperbaruiPada DateTime  @updatedAt
+
+  rapat          Rapat     @relation(fields: [rapatId], references: [id])
+  pembahasan    NotulenPembahasan[]
+  keputusan     NotulenKeputusan[]
+
+  @@map("notulen")
+}
+
+model NotulenPembahasan {
+  id          Int     @id @default(autoincrement())
+  notulenId   Int
+  judulAgenda String
+  pembahasan  String? @db.Text
+  kesimpulan  String? @db.Text
+  urutan      Int
+
+  notulen     Notulen @relation(fields: [notulenId], references: [id], onDelete: Cascade)
+
+  @@map("notulen_pembahasan")
+}
+
+model NotulenKeputusan {
+  id               Int      @id @default(autoincrement())
+  notulenId        Int
+  keputusan        String   @db.Text
+  penanggungJawab  String?
+  tenggatWaktu     DateTime?
+
+  notulen          Notulen  @relation(fields: [notulenId], references: [id], onDelete: Cascade)
+
+  @@map("notulen_keputusan")
+}
+
+
+
+
+
+

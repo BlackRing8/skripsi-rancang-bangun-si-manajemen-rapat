@@ -1,9 +1,8 @@
 "use client";
-// import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function RolePage() {
+export default function NotFoundPage() {
   const router = useRouter();
   useEffect(() => {
     const ambilUnit = async () => {
@@ -24,5 +23,5 @@ export default function RolePage() {
     ambilUnit();
   }, []);
 
-  return <div className="flex w-full h-screen justify-center items-center font-bold md:text-4xl">Loading.....</div>;
+  return <div className="flex w-full h-screen justify-center items-center font-bold md:text-4xl text-center px-6">Sorry Halaman tidak ditemukan, Mengalihkan halaman ke Dashboard....</div>;
 }
