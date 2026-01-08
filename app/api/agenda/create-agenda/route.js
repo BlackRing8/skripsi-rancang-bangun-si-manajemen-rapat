@@ -47,13 +47,18 @@ export async function POST(req) {
 
     const { judul, deskripsi, tanggalMulai, tanggalSelesai, lokasi, linkMeeting, peserta, agendas } = body;
 
+    const tanggalMulaiUtc = zonedTimeToUtc(tanggalMulai);
+    const tanggalSelesaiUtc = zonedTimeToUtc(tanggalSelesai);
+
+    console.log;
+
     const pesertaAgenda = peserta || [];
 
     const rapat = await createRapatWithNotulen({
       judul,
       deskripsi,
-      tanggalMulai,
-      tanggalSelesai,
+      tanggalMulai: tanggalMulaiUtc,
+      tanggalSelesai: tanggalSelesaiUtc,
       lokasi,
       linkMeeting,
       pesertaAgenda,
