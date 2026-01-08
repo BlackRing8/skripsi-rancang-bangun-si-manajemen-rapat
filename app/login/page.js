@@ -25,7 +25,7 @@ export default function LoginPage() {
           <Image src="/logo/logo-trilogi.jpg" width={100} height={100} alt="logo-universitas-trilogi" className="mx-auto my-2" />
           <p className="text-center">Aplikasi sistem informasi manajemen rapat Universitas Trilogi</p>
           <h1 className="w-full text-center font-bold text-2xl mb-2 mt-2 text-blue-600"> LOGIN HERE </h1>
-          <p className="text-gray-600 mb-6 text-center">Gunakan akun Google Anda</p>
+
           <div className="w-full  justify-center flex">
             <button onClick={() => signIn("google", { callbackUrl: "/" })} className="bg-blue-600 text-white px-4 py-4 font-semibold rounded-lg hover:bg-blue-400 transition hover:cursor-pointer">
               Login dengan Google
