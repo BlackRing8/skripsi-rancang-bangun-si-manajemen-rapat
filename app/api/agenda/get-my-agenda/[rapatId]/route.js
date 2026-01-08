@@ -15,6 +15,7 @@ export async function GET(req, context) {
       detailRapat.notulen.id = await encodeId(detailRapat.notulen.id);
     }
 
+    console.log(detailRapat);
     return NextResponse.json(detailRapat);
   } catch (error) {
     console.error("gagal mengambil detail rapat", error);

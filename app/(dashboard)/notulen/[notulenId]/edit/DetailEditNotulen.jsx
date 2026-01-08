@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formatWIBCumaHari, formatWIBCumaWaktu } from "@/lib/format-time";
+import Swal from "sweetalert2";
 
 function KeputusanEditor({ notulen, setNotulen, isEditable }) {
   const keputusan = notulen.keputusan ?? [];
@@ -220,7 +221,61 @@ export default function DetailEditNotulen({ notulenId }) {
     }
   };
 
-  const finalisasi = async () => {};
+  const finalisasi = async () => {
+    const result = await Swal.fire({
+      heightAuto: false,
+      position: "top-center",
+      icon: "warning",
+      title: "Setelah difinalisasi, notulen tidak dapat diubah lagi.",
+      text: "Pastikan seluruh pembahasan dan keputusan sudah benar.",
+      showConfirmButton: true,
+      showCancelButton: true,
+      scrollbarPadding: false,
+      confirmButtonText: "Lanjutkan",
+      cancelButtonText: "Batal",
+    });
+
+    // Jika user batal
+    if (!result.isConfirmed) return;
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`/api/notulen/${notulenId}/finalisasi`, {
+        method: "PUT",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Gagal finalisasi notulen");
+      }
+
+      setNotulen((prev) => ({
+        ...prev,
+        status: "DIKUNCI",
+        dikunciPada: new Date().toISOString(),
+      }));
+
+      await Swal.fire({
+        heightAuto: false,
+        icon: "success",
+        title: "Notulen berhasil difinalisasi",
+        text: "Notulen telah dikunci dan tidak dapat diubah kembali.",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      await Swal.fire({
+        heightAuto: false,
+        icon: "error",
+        title: "Gagal finalisasi",
+        text: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -366,7 +421,7 @@ export default function DetailEditNotulen({ notulenId }) {
 
       {/* ACTION */}
       {isEditable && (
-        <div className="flex gap-4">
+        <div className={`${notulen.status === "DIKUNCI" ? "hidden" : "flex md:gap-6 gap-2"}`}>
           <button
             onClick={simpanDraft}
             disabled={loading || notulen.status === "FINAL" || notulen.status === "DIKUNCI"}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { formatWIB } from "@/lib/format-time";
 import { Edit, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
 
 const TABS = [
   { id: "all", label: "Seluruh agenda saya" },
@@ -33,7 +34,22 @@ export default function EventTabs() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Yakin ingin menghapus agenda ini?")) return;
+    // if (!confirm("Yakin ingin menghapus agenda ini?")) return;
+    const result = await Swal.fire({
+      heightAuto: false,
+      position: "top-center",
+      icon: "warning",
+      title: "Yakin ingin menghapus rapat ini?",
+      text: "seluruh peserta terdaftar akan kehilangan data atau notulen rapat ini",
+      showConfirmButton: true,
+      showCancelButton: true,
+      scrollbarPadding: false,
+      confirmButtonText: "Lanjutkan",
+      cancelButtonText: "Batal",
+    });
+
+    // Jika user batal
+    if (!result.isConfirmed) return;
 
     try {
       await fetch(`/api/agenda/update-agenda/${id}`, { method: "DELETE" });
@@ -69,12 +85,12 @@ export default function EventTabs() {
 
                 {item.sayaPeserta && (
                   <a href={`/notulen/${item.secureId}/read-only`} className="text-green-600 text-sm font-semibold">
-                    {item.notulen.status === "DRAFT" || "FINAL" ? "Lihat Notulen Sementara" : "Lihat Notulen"}
+                    {item.notulen.status === "DRAFT" && "FINAL" ? "Lihat Notulen Sementara" : "Lihat Notulen"}
                   </a>
                 )}
                 {item.sayaPembuat && (
                   <a href={`/notulen/${item.secureId}/edit`} className="text-green-600 text-sm font-semibold">
-                    {item.notulen.status === "DRAFT" || "FINAL" ? "Edit Notulen" : "Lihat Notulen"}
+                    {item.notulen.status === "DRAFT" && "FINAL" ? "Edit Notulen" : "Lihat Notulen"}
                   </a>
                 )}
               </div>

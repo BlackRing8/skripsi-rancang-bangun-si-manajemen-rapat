@@ -125,7 +125,7 @@ export default function LihatNotulen({ notulenId }) {
           <p className="text-xs md:text-sm text-gray-600">Jenis: {notulen.jenisNotulen?.replace("_", " ")}</p>
           {notulen.status === "DRAFT" && <span className="inline-block mt-2 px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs md:text-sm font-semibold">{notulen.status}</span>}
           {notulen.status === "FINAL" && <span className="inline-block mt-2 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs md:text-sm font-semibold">{notulen.status}</span>}
-          {notulen.status === "DIKUNCI" && <span className="inline-block mt-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs md:text-sm font-semibold">{notulen.status}</span>}
+          {notulen.status === "DIKUNCI" && <span className="inline-block mt-2 px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-xs md:text-sm font-semibold">{notulen.status}</span>}
         </div>
         <img src="/logo/logo-trilogi-teks.png" alt="logo-trilogi" className="h-10 w-30 md:h-20 md:w-80" />
       </div>

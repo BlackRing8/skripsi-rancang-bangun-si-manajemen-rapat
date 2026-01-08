@@ -119,3 +119,34 @@ export async function simpanKeputusanNotulen(payload) {
 
   return true;
 }
+
+export async function finalisasiNotulen(payload) {
+  const { notulenId, pembuatId } = payload;
+
+  const notulen = await prisma.notulen.findFirst({
+    where: {
+      id: Number(notulenId),
+      dibuatOleh: Number(pembuatId),
+      status: "FINAL",
+    },
+    include: {
+      keputusan: true,
+    },
+  });
+
+  if (!notulen) {
+    throw new Error("Notulen tidak ditemukan atau belum siap difinalisasi");
+  }
+
+  if (notulen.keputusan.length === 0) {
+    throw new Error("Minimal satu keputusan harus diisi sebelum finalisasi");
+  }
+
+  return prisma.notulen.update({
+    where: { id: Number(notulenId) },
+    data: {
+      status: "DIKUNCI",
+      dikunciPada: new Date(),
+    },
+  });
+}

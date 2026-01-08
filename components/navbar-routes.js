@@ -9,8 +9,8 @@ import Link from "next/link";
 export default function NavbarRoutes() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [query, setQuery] = useState("");
-  const [notifOpen, setNotifOpen] = useState(false);
+  // const [query, setQuery] = useState("");
+  // const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -90,7 +90,7 @@ export default function NavbarRoutes() {
   }
 
   return (
-    <div className="flex gap-x-2 mx-4 md:mx-10 justify-between w-full">
+    <div className="flex gap-x-2 mx-0 md:mx-10 justify-between w-full">
       <div className="relative grid w-60 text-sm md:text-xl font-bold items-center">{new Date().toLocaleDateString("id-ID", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</div>
       <div className="flex items-center gap-4">
         {/* Notif */}
@@ -147,9 +147,6 @@ export default function NavbarRoutes() {
           )}
         </div>
       </div>
-      {/* <button onClick={handleLogout} className=" px-4 py-2 bg-blue-400 text-white rounded-full hover:bg-red-500 font-semibold transition text-xl">
-        Logout
-      </button> */}
     </div>
   );
 }
