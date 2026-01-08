@@ -12,8 +12,8 @@ export async function PATCH(req) {
   const body = await req.json();
   const { id, judul, deskripsi, lokasi, start, end } = body;
 
-  const tanggalMulai = zonedTimeToUtc(start.dateTime);
-  const tanggalSelesai = zonedTimeToUtc(end.dateTime);
+  const tanggalMulai = zonedTimeToUtc(start.dateTime, "Asia/Jakarta");
+  const tanggalSelesai = zonedTimeToUtc(end.dateTime, "Asia/Jakarta");
 
   console.log(tanggalMulai + "-" + tanggalSelesai);
 

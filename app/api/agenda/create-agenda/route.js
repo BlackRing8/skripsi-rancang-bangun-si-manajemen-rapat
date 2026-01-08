@@ -47,8 +47,8 @@ export async function POST(req) {
 
     const { judul, deskripsi, tanggalMulai, tanggalSelesai, lokasi, linkMeeting, peserta, agendas } = body;
 
-    const tanggalMulaiUtc = zonedTimeToUtc(tanggalMulai);
-    const tanggalSelesaiUtc = zonedTimeToUtc(tanggalSelesai);
+    const tanggalMulaiUtc = zonedTimeToUtc(tanggalMulai, "Asia/Jakarta");
+    const tanggalSelesaiUtc = zonedTimeToUtc(tanggalSelesai, "Asia/Jakarta");
 
     console.log;
 
