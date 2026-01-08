@@ -22,7 +22,7 @@ export default function RolePage() {
       }
     };
     ambilUnit();
-  }, []);
+  }, [router]);
 
   return <div className="flex w-full h-screen justify-center items-center font-bold md:text-4xl">Loading.....</div>;
 }

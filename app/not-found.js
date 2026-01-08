@@ -21,7 +21,7 @@ export default function NotFoundPage() {
       }
     };
     ambilUnit();
-  }, []);
+  }, [router]);
 
   return <div className="flex w-full h-screen justify-center items-center font-bold md:text-4xl text-center px-6">Sorry Halaman tidak ditemukan, Mengalihkan halaman ke Dashboard....</div>;
 }

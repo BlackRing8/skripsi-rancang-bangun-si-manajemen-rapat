@@ -7,7 +7,7 @@ import { PERMISSIONS } from "@/lib/permission";
 
 import FormAgenda from "@/components/agenda_components/form-agenda";
 
-export default function createPage() {
+export default function CreatePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 

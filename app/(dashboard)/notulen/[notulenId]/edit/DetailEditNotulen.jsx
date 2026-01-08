@@ -135,7 +135,7 @@ export default function DetailEditNotulen({ notulenId }) {
       }
     };
     if (session) fetchDraftNotulen();
-  }, [notulenId, session]);
+  }, [notulenId, session, router]);
 
   // Handler tambah agenda pembahasan
   const tambahAgenda = () => {
