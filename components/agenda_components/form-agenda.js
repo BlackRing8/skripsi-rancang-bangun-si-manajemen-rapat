@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import UnitPicker from "./UnitPicker";
 
 export default function FormAgenda() {
   const [selectedUnit, setSelectedUnit] = useState("");
   const [selectedUser, setSelectedUser] = useState("");
   const [agendas, setAgendas] = useState([""]);
+  const [unitTujuanIds, setUnitTujuanIds] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -82,20 +84,27 @@ export default function FormAgenda() {
       return;
     }
 
-    // bersihkan agenda kosong
-    const cleanedAgendas = agendas.map((a) => a.trim()).filter((a) => a !== "");
-
-    if (cleanedAgendas.length === 0) {
-      setMessage("❌ Minimal satu agenda rapat harus diisi.");
+    if (unitTujuanIds.length === 0) {
+      setMessage("Minimal satu unit tujuan harus dipilih");
       setLoading(false);
       return;
     }
 
+    // bersihkan agenda kosong
+    // const cleanedAgendas = agendas.map((a) => a.trim()).filter((a) => a !== "");
+
+    // if (cleanedAgendas.length === 0) {
+    //   setMessage("❌ Minimal satu agenda rapat harus diisi.");
+    //   setLoading(false);
+    //   return;
+    // }
+
     try {
       const dataToSend = {
         ...form,
+        unitTujuanIds,
         peserta,
-        agendas: cleanedAgendas, // ⬅️ PENTING
+        // agendas: cleanedAgendas, // ⬅️ PENTING
       };
 
       const res = await fetch("/api/agenda/create-agenda", {
@@ -135,8 +144,9 @@ export default function FormAgenda() {
           <div className="lg:w-1/2 justify-start items-start flex-col space-y-6 pr-12 lg:border-r-4 border-blue-300 ">
             <input type="text" name="judul" placeholder="Judul Rapat" value={form.judul} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none " />
             <textarea name="deskripsi" placeholder="Deskripsi" value={form.deskripsi} onChange={handleChange} className="w-full border h-32 border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none " />
+
             {/* ===== AGENDA RAPAT ===== */}
-            <div>
+            {/* <div>
               <label className="block font-semibold mb-2 text-gray-800">Agenda Rapat</label>
 
               {agendas.map((agenda, index) => (
@@ -174,7 +184,7 @@ export default function FormAgenda() {
               </button>
 
               <p className="text-sm text-gray-500 mt-2 italic">Agenda akan digunakan untuk membuat notulen secara otomatis.</p>
-            </div>
+            </div> */}
 
             <div className="grid lg:grid-cols-2 gap-4 mr-20">
               {/* Kolom Kiri: Tanggal */}
@@ -254,6 +264,7 @@ export default function FormAgenda() {
               placeholder="Link meeting (jika ada)"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
+            <UnitPicker value={unitTujuanIds} onChange={setUnitTujuanIds} />
           </div>
 
           {/* ------------- */}
@@ -309,7 +320,7 @@ export default function FormAgenda() {
                 + Tambah Input Manual
               </button>
             </div>
-            <button type="submit" disabled={loading} className="h-11 mt-6 w-40 bg-red-500 hover:bg-red-700 text-white font-semibold py-0 rounded-lg">
+            <button type="submit" disabled={loading} className="h-11 mt-6 w-40 bg-blue-500 hover:bg-blue-400 text-white font-semibold py-0 rounded-lg">
               {loading ? "Membuat Agenda..." : "Buat Agenda"}
             </button>
             {message && <p className={`text-center mt-3 ${message.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>{message}</p>}

@@ -23,10 +23,17 @@ export async function PUT(req, context) {
       return NextResponse.json({ message: "ID tidak valid" }, { status: 404 });
     }
 
-    const result = await finalisasiNotulen({ notulenId, pembuatId });
+    const { keputusan } = await req.json();
+    console.log("data diterima:", keputusan);
+
+    if (!Array.isArray(keputusan) || keputusan.length === 0) {
+      return NextResponse.json({ message: "Minimal satu keputusan harus diisi" }, { status: 400 });
+    }
+
+    const result = await finalisasiNotulen({ notulenId, pembuatId, keputusan });
 
     return NextResponse.json({
-      message: "Notulen berhasil difinalisasi dan dikunci",
+      message: "Notulen berhasil disimpan dan dikunci",
       notulen: result,
     });
   } catch (error) {

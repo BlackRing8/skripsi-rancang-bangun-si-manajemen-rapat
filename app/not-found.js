@@ -7,14 +7,14 @@ export default function NotFoundPage() {
   useEffect(() => {
     const ambilUnit = async () => {
       try {
-        const res = await fetch("/api/user/cek-user");
+        const res = await fetch("/api/profile/cek-user");
         if (!res.ok) throw new Error("Gagal mengambil data user");
         const dataUnit = await res.json();
 
         if (dataUnit.profileCompleted === false) {
           router.push("/complete_profile");
         } else {
-          router.push("/dashboard");
+          router.push("/");
         }
       } catch (err) {
         console.log(err.message);

@@ -9,6 +9,8 @@ export default function ProfilePage() {
   const [modalNik, setModalNik] = useState(false);
   const [nikBaru, setNikBaru] = useState("");
 
+  const [Admin, setAdmin] = useState(false);
+
   // untuk penambahan unit dan jabatan
   const [units, setUnits] = useState([]);
   const [rows, setRows] = useState([
@@ -73,7 +75,7 @@ export default function ProfilePage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/user/update-profile/update-unit-jabatan", {
+      const res = await fetch("/api/profile/update-profile/update-unit-jabatan", {
         method: "POST",
         body: JSON.stringify({
           selections: rows.map((r) => ({
@@ -104,9 +106,13 @@ export default function ProfilePage() {
     const ambilDataProfile = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/user/cek-user`, { method: "GET" });
+        const res = await fetch(`/api/profile/cek-user`, { method: "GET" });
         if (!res.ok) throw new Error("Gagal mengambil data profile");
         const data = await res.json();
+        const isAdmin = data.unitJabatan.some((uj) => uj.jabatan.nama.toLowerCase() === "admin");
+        if (isAdmin) {
+          setAdmin(true);
+        }
         console.log("data profile:", data);
 
         setDataProfile(data);
@@ -122,7 +128,7 @@ export default function ProfilePage() {
   // untuk update nama
   const updateNama = async () => {
     try {
-      const res = await fetch("/api/user/update-profile/update-nama", {
+      const res = await fetch("/api/profile/update-profile/update-nama", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: namaBaru }),
@@ -143,7 +149,7 @@ export default function ProfilePage() {
   // untuk update nama
   const tambahNik = async () => {
     try {
-      const res = await fetch("/api/user/update-profile/update-nik", {
+      const res = await fetch("/api/profile/update-profile/update-nik", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nik: nikBaru }),
@@ -163,7 +169,7 @@ export default function ProfilePage() {
   // ------------------------//
 
   const hapusUnitJabatan = async (id) => {
-    const res = await fetch(`/api/user/update-profile/update-unit-jabatan/${id}`, {
+    const res = await fetch(`/api/profile/update-profile/update-unit-jabatan/${id}`, {
       method: "DELETE",
     });
 
@@ -231,25 +237,44 @@ export default function ProfilePage() {
           {Array.isArray(dataProfile.unitJabatan) > 0 ? (
             <table className="border border-gray-500">
               <thead className="bg-gray-300 text-gray-700 text-sm uppercase">
-                <tr className="">
-                  <th className=" py-2 border border-black">Unit</th>
-                  <th className="">Jabatan</th>
-                  <th className="">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dataProfile.unitJabatan.map((uj) => (
-                  <tr key={uj.id} className="text-center border border-black">
-                    <td className="border border-black py-2">{uj.unit.nama}</td>
-                    <td>{uj.jabatan.nama}</td>
-                    <td className="border border-black py-2">
-                      <button onClick={() => hapusUnitJabatan(uj.id)} className="bg-red-500 text-xs md:text-lg text-white px-2 py-1 md:px-3.5 md:py-2 rounded-lg hover:bg-red-400 hover:cursor-pointer">
-                        Hapus Jabatan
-                      </button>
-                    </td>
+                {Admin === true ? (
+                  <tr>
+                    <th className=" py-2 border border-black">Unit</th>
+                    <th className="">Jabatan</th>
+                    <th className="">Aksi</th>
                   </tr>
-                ))}
-              </tbody>
+                ) : (
+                  <tr>
+                    <th className=" py-2 border border-black">Unit</th>
+                    <th className="">Jabatan</th>
+                  </tr>
+                )}
+              </thead>
+
+              {Admin === true ? (
+                <tbody>
+                  {dataProfile.unitJabatan.map((uj) => (
+                    <tr key={uj.id} className="text-center border border-black">
+                      <td className="border border-black py-2">{uj.unit.nama}</td>
+                      <td>{uj.jabatan.nama}</td>
+                      <td className="border border-black py-2">
+                        <button onClick={() => hapusUnitJabatan(uj.id)} className="bg-red-500 text-xs md:text-lg text-white px-2 py-1 md:px-3.5 md:py-2 rounded-lg hover:bg-red-400 hover:cursor-pointer">
+                          Hapus Jabatan
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              ) : (
+                <tbody>
+                  {dataProfile.unitJabatan.map((uj) => (
+                    <tr key={uj.id} className="text-center border border-black">
+                      <td className="border border-black py-2">{uj.unit.nama}</td>
+                      <td>{uj.jabatan.nama}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
             </table>
           ) : (
             <div className="mt-3 bg-white p-2 rounded-lg text-sm">
@@ -258,16 +283,20 @@ export default function ProfilePage() {
             </div>
           )}
           {/* Untuk menambah jabatan */}
-          <div className="my-3">
-            <button
-              onClick={() => {
-                setModalJabatan(true);
-              }}
-              className="bg-blue-500 text-white mt-6 px-5 py-2.5 rounded-lg hover:cursor-pointer hover:bg-blue-400"
-            >
-              Tambah Jabatan
-            </button>
-          </div>
+          {Admin === true ? (
+            <div className="my-3">
+              <button
+                onClick={() => {
+                  setModalJabatan(true);
+                }}
+                className="bg-blue-500 text-white mt-6 px-5 py-2.5 rounded-lg hover:cursor-pointer hover:bg-blue-400"
+              >
+                Tambah Jabatan
+              </button>
+            </div>
+          ) : (
+            <div></div>
+          )}
         </div>
       )}
 

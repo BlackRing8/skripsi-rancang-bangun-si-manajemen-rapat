@@ -5,14 +5,16 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(req) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse, json({ error: "UNAUTHORIZED" }, { status: 401 });
+  if (!session?.user?.id) {
+    return (NextResponse, json({ error: "UNAUTHORIZED" }, { status: 401 }));
   }
+
+  const userId = session.user.id;
 
   const { name } = await req.json();
 
   try {
-    const user = await updateNamaUser(session.user.email, name);
+    const user = await updateNamaUser(userId, name);
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
     if (error.message === "INVALID_NAME") {

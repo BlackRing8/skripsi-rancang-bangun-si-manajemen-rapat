@@ -7,17 +7,28 @@ export async function getUserById(userId) {
   return prisma.user.findUnique({
     where: { id: userId },
     select: {
+      id: true,
       email: true,
       name: true,
       nik: true,
+      profileCompleted: true,
       unitJabatan: {
         select: {
           id: true,
-          unit: { select: { nama: true } },
-          jabatan: { select: { nama: true } },
+          unit: {
+            select: {
+              id: true,
+              nama: true,
+            },
+          },
+          jabatan: {
+            select: {
+              id: true,
+              nama: true,
+            },
+          },
         },
       },
-      profileCompleted: true,
     },
   });
 }
@@ -25,22 +36,22 @@ export async function getUserById(userId) {
 //----------------------------------------//
 // -------- Update Nama Profile --------- //
 //----------------------------------------//
-export async function updateNamaUser(email, name) {
+export async function updateNamaUser(userId, name) {
   // validasi jika kosong
   if (!name || name.trim() === "") {
     throw new Error("INVALID_NAME");
   }
 
   return prisma.user.update({
-    where: { email },
-    data: { name },
+    where: { id: Number(userId) },
+    data: { name: name },
   });
 }
 
 //----------------------------------------//
 // --------- Update Nik Profile --------- //
 //----------------------------------------//
-export async function updateNikUser(email, nik) {
+export async function updateNikUser(userId, nik) {
   console.log("Updating NIK:", nik);
   // validasi jika kosong
   if (!nik || nik.trim() === "") {
@@ -53,7 +64,7 @@ export async function updateNikUser(email, nik) {
   }
 
   return prisma.user.update({
-    where: { email },
+    where: { id: Number(userId) },
     data: { nik: Number(nik) },
   });
 }

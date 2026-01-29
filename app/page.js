@@ -8,12 +8,15 @@ export default function RolePage() {
   useEffect(() => {
     const ambilUnit = async () => {
       try {
-        const res = await fetch("/api/user/cek-user");
+        const res = await fetch("/api/profile/cek-user");
         if (!res.ok) throw new Error("Gagal mengambil data user");
         const dataUnit = await res.json();
+        const isAdmin = dataUnit.unitJabatan.some((uj) => uj.jabatan.nama.toLowerCase() === "admin");
 
         if (dataUnit.profileCompleted === false) {
           router.push("/complete_profile");
+        } else if (isAdmin) {
+          router.push("/admin");
         } else {
           router.push("/dashboard");
         }

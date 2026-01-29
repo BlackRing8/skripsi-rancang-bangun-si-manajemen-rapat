@@ -1,29 +1,9 @@
 "use client";
-import { Calendar, Compass, Library, Users, User } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { Calendar, Compass, AppWindow, Users, User } from "lucide-react";
+
+import { useSession } from "next-auth/react";
 
 import { SidebarItem } from "./sidebar-item";
-const handleLogout = async () => {
-  try {
-    // Logout dari next-auth session secara realtime
-    await signOut({ redirect: true, callbackUrl: "/login" });
-
-    Swal.fire({
-      heightAuto: false,
-      position: "top-center",
-      icon: "success",
-      title: "Anda telah Log Out!",
-      showConfirmButton: false,
-      timer: 1000,
-      scrollbarPadding: false,
-    });
-
-    router.push("/login");
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
-};
 
 const userRoutes = [
   {
@@ -41,11 +21,28 @@ const userRoutes = [
     icon: Users,
     href: "/manajemen",
   },
-  // {
-  //   label: "Notulen dan dokumen",
-  //   icon: Library,
-  //   href: "/notulen",
-  // },
+  {
+    label: "Lihat Profil",
+    icon: User,
+    href: "/profile",
+  },
+];
+const adminRoutes = [
+  {
+    label: "Panel Monitor",
+    icon: AppWindow,
+    href: "/admin",
+  },
+  {
+    label: "Agenda Rapat",
+    icon: Calendar,
+    href: "/agenda",
+  },
+  {
+    label: "Manajemen Anggota",
+    icon: Users,
+    href: "/manajemen",
+  },
   {
     label: "Lihat Profil",
     icon: User,
@@ -54,11 +51,21 @@ const userRoutes = [
 ];
 
 const SidebarRoutes = () => {
-  const pathname = usePathname();
+  const { data: session, status } = useSession();
 
-  const isPimpinanPage = pathname?.includes("/");
+  if (status === "loading") {
+    return <div>Memuat data...</div>;
+  }
 
-  const routes = isPimpinanPage ? userRoutes : anggotaRoutes;
+  // fallback jika session belum ada
+  if (!session?.user) {
+    return null;
+  }
+
+  // 🔑 CEK APAKAH USER ADMIN
+  const isAdmin = session.user.jabatans?.some((jabatan) => jabatan.toLowerCase() === "admin");
+
+  const routes = isAdmin ? adminRoutes : userRoutes;
 
   return (
     <div className="flex flex-col w-full">

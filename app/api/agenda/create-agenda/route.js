@@ -2,39 +2,9 @@ import { NextResponse } from "next/server";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { z } from "zod";
+
 import zonedTimeToUtc from "date-fns-tz/zonedTimeToUtc";
 import { createRapatWithNotulen } from "@/services/agenda.service";
-
-const agendaSchema = z.object({
-  judul: z.string().min(3, "Judul minimal 3 karakter"),
-  deskripsi: z.string().optional(),
-  tanggalMulai: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Format tanggalMulai tidak valid",
-  }),
-  tanggalSelesai: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Format tanggalSelesai tidak valid",
-  }),
-  lokasi: z.string().optional(),
-  linkMeeting: z.string().optional(),
-  peserta: z
-    .array(z.string())
-    .optional()
-    .transform((arr) => {
-      if (!arr) return [];
-      return Array.from(
-        new Set(
-          arr
-            .map((s) => (s || "").trim())
-            .filter((s) => s !== "")
-            .map((s) => s.toLowerCase())
-        )
-      );
-    })
-    .refine((arr) => arr.every((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)), {
-      message: "Semua peserta harus dalam format email yang valid",
-    }),
-});
 
 export async function POST(req) {
   try {
@@ -45,12 +15,10 @@ export async function POST(req) {
 
     const body = await req.json();
 
-    const { judul, deskripsi, tanggalMulai, tanggalSelesai, lokasi, linkMeeting, peserta, agendas } = body;
+    const { judul, deskripsi, tanggalMulai, tanggalSelesai, lokasi, linkMeeting, peserta, unitTujuanIds } = body;
 
     const tanggalMulaiUtc = zonedTimeToUtc(tanggalMulai, "Asia/Jakarta");
     const tanggalSelesaiUtc = zonedTimeToUtc(tanggalSelesai, "Asia/Jakarta");
-
-    console.log;
 
     const pesertaAgenda = peserta || [];
 
@@ -62,7 +30,7 @@ export async function POST(req) {
       lokasi,
       linkMeeting,
       pesertaAgenda,
-      agendas,
+      unitTujuanIds,
       pembuatId: Number(session.user.id),
     });
 

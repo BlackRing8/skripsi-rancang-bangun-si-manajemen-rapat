@@ -4,7 +4,7 @@ import { PERMISSIONS } from "@/lib/permission";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+
 import EventTabs from "@/components/agenda_components/event-tabs";
 
 export default function AgendaPage() {

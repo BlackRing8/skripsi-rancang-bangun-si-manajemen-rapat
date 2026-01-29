@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     const ambilUnit = async () => {
       try {
-        const res = await fetch("/api/user/cek-user");
+        const res = await fetch("/api/profile/cek-user");
         if (!res.ok) throw new Error("Gagal mengambil data rapat");
         const dataUnit = await res.json();
 
@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }) {
       }
     };
     ambilUnit();
-  }, []);
+  }, [router]);
 
   if (status === "loading") {
     return (

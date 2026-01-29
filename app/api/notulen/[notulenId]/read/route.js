@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { decodeId } from "@/lib/secure-id";
 import { ambilDraftNotulen } from "@/services/notulen.service";
+import { generateUserQR } from "@/services/generate-qr.service";
 
 export async function GET(req, context) {
   const session = await getServerSession(authOptions);
@@ -19,6 +20,12 @@ export async function GET(req, context) {
   }
 
   const draft = await ambilDraftNotulen(notulenId);
+  const qrCode = await generateUserQR(draft.rapat.pembuat.id);
+
+  const hasil = {
+    ...draft,
+    imageLink: qrCode,
+  };
 
   //   console.log("data hasil service:", { draft });
 
@@ -26,5 +33,5 @@ export async function GET(req, context) {
   //     return NextResponse.json({ message: "Anda tidak memiliki akses" }, { status: 403 });
   //   }
 
-  return NextResponse.json(draft);
+  return NextResponse.json(hasil);
 }

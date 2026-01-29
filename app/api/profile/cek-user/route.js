@@ -12,5 +12,6 @@ export async function GET() {
   }
 
   const data = await getUserById(session.user.id);
+
   return NextResponse.json(data);
 }

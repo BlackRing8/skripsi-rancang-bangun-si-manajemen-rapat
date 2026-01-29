@@ -15,12 +15,11 @@ export default function DetailRapat({ rapatId }) {
   const [userStatus, setUserStatus] = useState();
   const [canAbsen, setCanAbsen] = useState(false);
   const [isCreator, setIsCreator] = useState(false);
-  const canAccessNotulen = userStatus === "HADIR" || userStatus === "IZIN" || isCreator;
 
   const noLink = !rapat?.linkMeeting || rapat.linkMeeting.trim() === "";
 
   // Untuk absen
-  const isAdmin = session?.user?.unit === "Admin";
+  const isAdmin = session?.user?.isAdmin === true;
 
   const canManageAbsensi = isCreator || isAdmin;
 
@@ -219,16 +218,15 @@ export default function DetailRapat({ rapatId }) {
 
             <div>
               <h5 className="font-bold text-gray-900">Link Notulen</h5>
-              {canAccessNotulen ? (
-                <div className="flex gap-3 mt-2">
-                  <a href={`/notulen/${rapat.notulen.id}/read-only`} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold">
-                    Lihat
-                  </a>
-                  <a className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-bold">Download</a>
-                </div>
-              ) : (
-                <p className="text-rose-600 text-sm font-semibold mt-2">Akses terbatas untuk peserta hadir / izin</p>
-              )}
+
+              <div className="flex gap-3 mt-2">
+                <a href={`/notulen/${rapat.notulen.id}/read-only`} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-bold">
+                  Lihat
+                </a>
+                <a href={`/api/notulen/${rapat.notulen.id}/download`} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-full text-sm font-bold">
+                  Download PDF
+                </a>
+              </div>
             </div>
           </div>
         </div>

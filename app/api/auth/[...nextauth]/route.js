@@ -89,6 +89,11 @@ export const authOptions = {
       session.user.units = dbUser.unitJabatan.map((uj) => uj.unit.nama);
       session.user.jabatans = dbUser.unitJabatan.map((uj) => uj.jabatan.nama);
 
+      // =========================
+      // 🔥 ADMIN FLAG (INI BARU)
+      // =========================
+      session.user.isAdmin = dbUser.unitJabatan.some((uj) => uj.unit.nama === "Admin");
+
       return session;
     },
   },
