@@ -22,11 +22,13 @@ export async function ambilDraftNotulen(notulenId) {
 export async function finalisasiNotulen(payload) {
   const { notulenId, pembuatId, keputusan } = payload;
 
+  console.log(notulenId);
+
   // 1. Validasi notulen & hak akses
   const notulen = await prisma.notulen.findFirst({
     where: {
       id: Number(notulenId),
-      dibuatOleh: Number(pembuatId),
+      // dibuatOleh: Number(pembuatId),
       status: { not: "DIKUNCI" }, // tidak boleh edit jika sudah dikunci
     },
   });
@@ -50,6 +52,13 @@ export async function finalisasiNotulen(payload) {
         penanggungJawab: k.penanggungJawab || null,
         tenggatWaktu: k.tenggatWaktu ? new Date(k.tenggatWaktu) : null,
       })),
+    });
+
+    await tx.rapat.update({
+      where: { id: Number(notulen.rapatId) },
+      data: {
+        status: "SELESAI",
+      },
     });
 
     // 2c. Kunci notulen
